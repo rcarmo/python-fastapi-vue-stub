@@ -1,0 +1,86 @@
+<!doctype html>
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <title>Vue Layout with Sidebar</title>
+        <!-- Use importmap to load Vue from a CDN -->
+        <script type="importmap">
+            {
+                "imports": {
+                    "vue": "https://unpkg.com/vue@3/dist/vue.esm-browser.js"
+                }
+            }
+        </script>
+        <!-- Link to your main.css -->
+        <link type="text/css" rel="stylesheet" href="main.css" />
+    </head>
+    <body>
+        <div id="app">
+            <div class="main-content">
+                <!-- Main content area -->
+                <h1>{{ message }}</h1>
+                <button @click="requestCard">Request Card Immediately</button>
+                <button @click="enableEventSource">Enable EventSource</button>
+                <button @click="disableEventSource">Disable EventSource</button>
+                <p>
+                    This app demonstrates how to dynamically update Vue
+                    components from multiple back-end sources - a database
+                    connection (that can be live) and a fake API that simulates
+                    an LLM call.
+                </p>
+                <p>
+                    The FastAPI back-end server side uses an internal queue to
+                    get the data and push it out to the browser using
+                    Server-Sent Events, and this mechanism can be extended to
+                    handle other sources (although we will need to add an
+                    external queue to get data from Azure Functions that do not
+                    run in-process with the HTTP loop)
+                </p>
+            </div>
+
+            <div class="sidebar">
+                <h2>Responses</h2>
+                <!-- Wrap the card list in a transition-group with name "card" -->
+                <transition-group name="card" tag="div">
+                    <div
+                        v-for="(card, index) in cards"
+                        :key="card.orderId || index"
+                        class="card"
+                        :class="{ highlight: card.highlight }"
+                    >
+                        <template v-if="card.source === 'api'">
+                            <h3>Fake LLM Response</h3>
+                            <p>
+                                {{ card.customerName }} ordered gadgets from {{
+                                card.employeeName }} on {{card.orderDate}} with
+                                number {{ card.orderId }}
+                            </p>
+                        </template>
+
+                        <!-- Default template for other sources -->
+                        <template v-else>
+                            <p><strong>Order ID:</strong> {{ card.orderId }}</p>
+                            <p>
+                                <strong>Order Date:</strong> {{ card.orderDate
+                                }}
+                            </p>
+                            <p>
+                                <strong>Customer:</strong> {{ card.customerName
+                                }}
+                            </p>
+                            <p>
+                                <strong>Employee:</strong> {{ card.employeeName
+                                }}
+                            </p>
+                            <p v-if="card.source">
+                                <strong>Source:</strong> {{ card.source }}
+                            </p>
+                        </template>
+                    </div>
+                </transition-group>
+            </div>
+        </div>
+        <!-- Your main Vue app script -->
+        <script type="module" src="./app.js"></script>
+    </body>
+</html>

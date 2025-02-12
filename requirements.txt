@@ -1,0 +1,6 @@
+fastapi
+peewee
+uvicorn
+weasyprint
+sqlmodel
+httpx
