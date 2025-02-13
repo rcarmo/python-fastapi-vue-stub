@@ -11,6 +11,33 @@ createApp({
     };
   },
   methods: {
+    async generatePDF() {
+      try {
+        // Open in new tab first (better UX as PDF generation might take time)
+        const newTab = window.open("about:blank");
+
+        // Fetch PDF
+        const response = await fetch("/generate-pdf");
+        if (!response.ok) {
+          throw new Error("Failed to generate PDF");
+        }
+
+        // Get the PDF blob
+        const blob = await response.blob();
+
+        // Create object URL
+        const pdfUrl = URL.createObjectURL(blob);
+
+        // Navigate the new tab to the PDF
+        newTab.location.href = pdfUrl;
+
+        // Clean up the object URL after a delay
+        setTimeout(() => URL.revokeObjectURL(pdfUrl), 1000);
+      } catch (error) {
+        console.error("Error generating PDF:", error);
+        alert("Failed to generate PDF. Please try again.");
+      }
+    },
     // Utility method: after DOM updates, scroll .sidebar to its bottom
     scrollSidebarToBottom() {
       nextTick(() => {

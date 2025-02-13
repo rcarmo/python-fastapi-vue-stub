@@ -6,12 +6,21 @@ from fastapi.middleware.cors import CORSMiddleware
 from .models import connect, get_data
 from datetime import datetime
 from uvicorn import run
+from weasyprint import HTML, CSS
+from jinja2 import Environment, FileSystemLoader
+from io import BytesIO
+from pathlib import Path
 import json
 import asyncio
 import httpx
 import itertools
+from .utils import PDFGenerator
+
 
 app = FastAPI()
+template_dir = Path(__file__).parent.parent / "templates"
+jinja_env = Environment(loader=FileSystemLoader(str(template_dir)))
+pdf_generator = PDFGenerator()
 
 # Enable CORS (for development only)
 app.add_middleware(
@@ -84,6 +93,28 @@ async def background_db_generator():
         except Exception as e:
             print("Error in background_db_generator:", e)
         await asyncio.sleep(3)
+
+
+
+@app.get("/generate-pdf")
+async def generate_pdf():
+    try:
+        engine = connect()
+        table_data =  list(get_data(engine))[:50]
+
+        pdf_buffer = pdf_generator.generate_order_report(table_data)
+
+        return StreamingResponse(
+            iter([pdf_buffer.getvalue()]),
+            media_type="application/pdf",
+            headers={
+                "Content-Disposition": "attachment; filename=order_report.pdf"
+            }
+        )
+
+    except Exception as e:
+        print(f"Error generating PDF: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
 
 
 # SSE event generator that yields messages from its queue.

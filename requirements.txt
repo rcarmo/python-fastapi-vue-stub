@@ -4,3 +4,4 @@ uvicorn
 weasyprint
 sqlmodel
 httpx
+jinja2
