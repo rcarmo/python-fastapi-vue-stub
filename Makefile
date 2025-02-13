@@ -21,9 +21,9 @@ init-db: ## Initialize the database
 	sqlite3 $(DATABASE_PATH) < assets/northwind.sql
 
 clean: ## Clean environment
-    find . -type d -name "__pycache__" -delete
-    find . -name "*.pyc" -delete
-    find . -name "*.db" -delete
+	find . -type d -name "__pycache__" -delete
+	find . -name "*.pyc" -delete
+	find . -name "*.db" -delete
 
 serve: ## Run with the embedded web server, assume it will take up the environment variables
 	python -m stub.app
