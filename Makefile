@@ -21,11 +21,11 @@ init-db: ## Initialize the database
 	sqlite3 $(DATABASE_PATH) < assets/northwind.sql
 
 clean: ## Clean environment
-	rm -f $(BYTECODE)
-	rm -f $(PYTHONCODE)
-	rm -f $(DATABASE_PATH)*
+    find . -type d -name "__pycache__" -delete
+    find . -name "*.pyc" -delete
+    find . -name "*.db" -delete
 
-serve: ## Run with the embedded web server
+serve: ## Run with the embedded web server, assume it will take up the environment variables
 	python -m stub.app
 
 %.png: %.pstats ## Render pstats profiler files into nice PNGs (requires dot)

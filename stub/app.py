@@ -10,6 +10,7 @@ from weasyprint import HTML, CSS
 from jinja2 import Environment, FileSystemLoader
 from io import BytesIO
 from pathlib import Path
+from os import environ
 import json
 import asyncio
 import httpx
@@ -160,4 +161,4 @@ async def startup_event():
 
 
 if __name__ == "__main__":
-    run("stub.app:app", host="127.0.0.1", port=8000, reload=True)
+    run("stub.app:app", host=environ.get("BIND_ADDRESS", "127.0.0.1"), port=int(environ.get("PORT",8000)), reload=True)
