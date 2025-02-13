@@ -8,6 +8,7 @@ createApp({
       cards: [],
       eventSource: null,
       nextId: 0, // for generating unique IDs
+      connectionId: null, // to store our unique connection ID from the server
     };
   },
   methods: {
@@ -38,6 +39,7 @@ createApp({
         alert("Failed to generate PDF. Please try again.");
       }
     },
+
     // Utility method: after DOM updates, scroll .sidebar to its bottom
     scrollSidebarToBottom() {
       nextTick(() => {
@@ -88,7 +90,19 @@ createApp({
         console.warn("EventSource is already enabled.");
         return;
       }
+      // Create a new EventSource connection
       this.eventSource = new EventSource("/events");
+
+      // Listen for "connect" event to capture the connection ID from server.
+      this.eventSource.addEventListener("connect", (event) => {
+        try {
+          const data = JSON.parse(event.data);
+          this.connectionId = data.connectionId;
+          console.log("Connected with ID:", this.connectionId);
+        } catch (error) {
+          console.error("Error parsing connection data:", error);
+        }
+      });
 
       // Listen for "api" events
       this.eventSource.addEventListener("api", (event) => {
@@ -133,9 +147,10 @@ createApp({
       });
 
       this.eventSource.onerror = (error) => {
-        console.error("EventSource failed:", error);
+        console.error("EventSource error:", error);
         this.disableEventSource();
       };
+
       console.log("EventSource enabled.");
     },
 
@@ -143,6 +158,7 @@ createApp({
       if (this.eventSource) {
         this.eventSource.close();
         this.eventSource = null;
+        this.connectionId = null;
         console.log("EventSource disabled.");
       } else {
         console.warn("No EventSource to disable.");
@@ -158,7 +174,7 @@ createApp({
     },
   },
   created() {
-    // Optionally enable SSE on page load
+    // Optionally enable SSE on page load:
     // this.enableEventSource();
   },
 }).mount("#app");

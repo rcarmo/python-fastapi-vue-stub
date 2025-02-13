@@ -2,7 +2,7 @@
 
 ## Why
 
-I needed a quick and dirty FastAPI + Vue skeleton to illustrate a few techniques. 
+I needed a quick and dirty FastAPI + Vue skeleton to illustrate a few techniques.
 
 ## What
 
@@ -27,5 +27,6 @@ Things this _does not do_:
 - [ ] External database queries (I decided to do a quick conversion of the classic Northwind Traders database to `sqlite`, for fun)
 - [ ] External API calls (it actually calls itself)
 - [ ] External queues/event sources (like what you might get from an Azure Function/Redis/etc.)
-- [ ] Session management (the `EventSource` will likely break or behave abnormally if there are multiple users)
+- [x] Basic multi-client support
+- [ ] Session management
 - [ ] Proper dependency management (version pinning, `virtualenv`, etc.)

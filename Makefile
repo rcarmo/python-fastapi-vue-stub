@@ -1,6 +1,6 @@
 # Set these if not defined already
 export BIND_ADDRESS?=0.0.0.0
-export PORT?=8080
+export PORT?=8000
 export DEBUG?=False
 export PROFILER?=False
 export DATABASE_PATH?=./northwind.db
